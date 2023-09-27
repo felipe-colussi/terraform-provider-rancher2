@@ -53,15 +53,14 @@ resource "rancher2_namespace" "testacc" {
 	testAccCheckRancher2UpgradeCatalogV24 = testAccRancher2CatalogGlobal + testAccRancher2CatalogCluster + testAccRancher2CatalogProject
 	testAccCheckRancher2UpgradeCertificateV24 = testAccRancher2Certificate + testAccRancher2CertificateNs
 	testAccCheckRancher2BootstrapV23 = `
-provider "rancher2" {
-  alias = "bootstrap"
+provider "bootstrap" {
 
   bootstrap = true
   insecure = true
   token_key = "` + providerDefaultEmptyString + `"
 }
 resource "rancher2_bootstrap" "foo" {
-  provider = rancher2.bootstrap
+  provider = bootstrap
 
   password = "` + testAccRancher2DefaultAdminPass + `"
   telemetry = true
@@ -76,15 +75,14 @@ provider "rancher2" {
 `
 
 	testAccCheckRancher2Bootstrap = `
-provider "rancher2" {
-  alias = "bootstrap"
+provider "bootstrap" {
 
   bootstrap = true
   insecure = true
   token_key = "` + providerDefaultEmptyString + `"
 }
 resource "rancher2_bootstrap" "foo" {
-  provider = rancher2.bootstrap
+  provider = bootstrap
 
   password = "` + testAccRancher2DefaultAdminPass + `"
   telemetry = true
@@ -432,11 +430,6 @@ func testAccRancher2UpgradeVars() resource.TestCheckFunc {
 				continue
 			}
 			token := rs.Primary.Attributes["token"]
-			// This get-envs and this getEnvs and prints were added to debugg a flaky test that was happening resulting on
-			// dangling resources. After they were added the flaky test didn't happen anymore. I believe that the syscall
-			// is fixing a race condition that was generating the flaky test
-			rancherTokenKey := os.Getenv("RANCHER_TOKEN_KEY")
-			rancherAdminPass := os.Getenv("RANCHER_ADMIN_PASS")
 			if err := os.Setenv("RANCHER_TOKEN_KEY", token); err != nil {
 				fmt.Printf("Failed to update RANCHER_TOKEN_KEY on resource %s with err: %s", k, err.Error())
 			}
@@ -444,7 +437,6 @@ func testAccRancher2UpgradeVars() resource.TestCheckFunc {
 			if err := os.Setenv("RANCHER_ADMIN_PASS", currentPassword); err != nil {
 				fmt.Printf("Failed to update RANCHER_ADMIN_PASS on resource %s with err: %s", k, err.Error())
 			}
-			fmt.Printf("Changing env on resource %s: RANCHER_TOKEN_KEY: %s -> %s, RANCHER_ADMIN_PASS: %s -> %s", k, rancherTokenKey, token, rancherAdminPass, currentPassword)
 		}
 		return nil
 	}

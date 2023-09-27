@@ -27,9 +27,13 @@ var (
 
 func init() {
 	testAccProvider = Provider()
+	bootstrapProvider := Provider()
 	testAccProviders = map[string]func() (*schema.Provider, error){
 		"rancher2": func() (*schema.Provider, error) {
 			return testAccProvider, nil
+		},
+		"bootstrap": func() (*schema.Provider, error) {
+			return bootstrapProvider, nil
 		},
 	}
 	testAccRancher2ClusterID = testAccRancher2DefaultClusterID
