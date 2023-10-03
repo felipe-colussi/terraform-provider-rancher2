@@ -269,6 +269,7 @@ resource "` + testAccRancher2NodeTemplateType + `" "foo-vsphere" {
 	cpu_count = "8"
 	disk_size = "20480"
 	pool =  "pool-YYYYYYYY"
+	graceful_shutdown_timeout = "30"
   }
 }
 `
@@ -744,6 +745,7 @@ func TestAccRancher2NodeTemplate_basic_Vsphere(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "vsphere_config.0.cpu_count", "8"),
 					resource.TestCheckResourceAttr(name, "vsphere_config.0.disk_size", "20480"),
 					resource.TestCheckResourceAttr(name, "vsphere_config.0.pool", "pool-YYYYYYYY"),
+					resource.TestCheckResourceAttr(name, "vsphere_config.0.graceful_shutdown_timeout", "30"),
 				),
 			},
 			{
